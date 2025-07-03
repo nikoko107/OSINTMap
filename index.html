@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINTMap - Outil d'Investigation Géospatiale</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-search"></i> OSINTMap</h1>
+            <p>Outil d'investigation géospatiale pour OpenStreetMap</p>
+        </header>
+
+        <div class="main-content">
+            <div class="search-panel">
+                <form id="searchForm">
+                    <!-- Mode proximité croisée uniquement -->
+                    <input type="hidden" name="searchMode" value="proximity">
+
+                    <!-- Zone de recherche par bounding box -->
+                    <div class="geographic-zone">
+                        <h3>Zone de recherche :</h3>
+                        <div class="field-group">
+                            <label>Définir la zone :</label>
+                            <div class="bbox-controls">
+                                <button type="button" id="drawBbox" class="btn btn-secondary">
+                                    <i class="fas fa-draw-polygon"></i> Dessiner sur la carte
+                                </button>
+                                <button type="button" id="clearBbox" class="btn btn-secondary" style="display:none;">
+                                    <i class="fas fa-trash"></i> Effacer la zone
+                                </button>
+                            </div>
+                        </div>
+                        <div class="field-group" id="bboxDisplay" style="display:none;">
+                            <label>Coordonnées de la zone :</label>
+                            <div class="bbox-coords">
+                                <input type="text" id="bboxCoords" readonly placeholder="Dessinez une zone sur la carte">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Élément principal à rechercher -->
+                    <div class="main-search">
+                        <h3>Quoi chercher :</h3>
+                        <div class="condition-fields">
+                            <div class="field-group">
+                                <label>Catégorie :</label>
+                                <select class="category" name="mainCategory" required>
+                                    <option value="">Sélectionner une catégorie</option>
+                                </select>
+                            </div>
+                            
+                            <div class="field-group">
+                                <label>Types (sélection multiple) :</label>
+                                <div class="types-container" name="mainTypes">
+                                    <p class="no-types">Sélectionnez d'abord une catégorie</p>
+                                </div>
+                            </div>
+                            
+                            <div class="field-group">
+                                <label>Recherche par nom (optionnel) :</label>
+                                <div class="name-search">
+                                    <select class="name-mode" name="mainNameMode">
+                                        <option value="">Ignorer le nom</option>
+                                        <option value="exact">Nom exact</option>
+                                        <option value="contains">Contient</option>
+                                        <option value="starts">Commence par</option>
+                                    </select>
+                                    <input type="text" class="name" name="mainName" placeholder="Texte à rechercher" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compléments de recherche -->
+                    <div class="complements-container">
+                        <h3>Compléments de recherche :</h3>
+                        <div id="complementsContainer">
+                            <!-- Les compléments seront ajoutés ici dynamiquement -->
+                        </div>
+                        
+                        <div class="complement-controls">
+                            <button type="button" id="addComplement" class="btn btn-secondary">
+                                <i class="fas fa-plus"></i> Ajouter un complément
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+                        
+                        <button type="button" id="clearAll" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Effacer tout
+                        </button>
+                    </div>
+                </form>
+
+                <div class="query-section">
+                    <h3>Requête Overpass générée :</h3>
+                    <div id="queryDisplay" class="query-display"></div>
+                    <button type="button" id="copyQuery" class="btn btn-secondary">
+                        <i class="fas fa-copy"></i> Copier la requête
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <div class="map-container">
+                    <h3>Carte des résultats</h3>
+                    <div class="address-search">
+                        <input type="text" id="addressInput" placeholder="Rechercher une adresse..." autocomplete="off">
+                        <button type="button" id="searchAddressBtn" class="btn btn-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div id="addressSuggestions" class="address-suggestions" style="display: none;"></div>
+                    </div>
+                    <div id="map"></div>
+                    <div class="map-info">
+                        <p><i class="fas fa-info-circle"></i> Clic droit sur un marqueur pour ouvrir OSM ou Street View</p>
+                    </div>
+                </div>
+
+                <div class="results-info">
+                    <div id="resultsCount" class="results-count"></div>
+                    <div id="loadingIndicator" class="loading" style="display:none;">
+                        <i class="fas fa-spinner fa-spin"></i> Recherche en cours...
+                    </div>
+                </div>
+
+                <div class="results-list" id="resultsListContainer" style="display:none;">
+                    <!-- Résultats principaux -->
+                    <div class="main-results-section">
+                        <h4>🎯 Résultats de la recherche</h4>
+                        <div class="results-table-container">
+                            <table id="mainResultsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Type</th>
+                                        <th>Catégorie OSM</th>
+                                        <th>Coordonnées</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mainResultsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Éléments compléments -->
+                    <div class="complement-results-section" id="complementResultsSection" style="display:none;">
+                        <h4>📍 Éléments de référence (compléments)</h4>
+                        <div class="results-table-container">
+                            <table id="complementResultsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rôle</th>
+                                        <th>Nom</th>
+                                        <th>Type</th>
+                                        <th>Catégorie OSM</th>
+                                        <th>Coordonnées</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="complementResultsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-section">
+                    <h3>Export des résultats</h3>
+                    <button id="downloadReport" class="btn btn-success" style="display:none;">
+                        <i class="fas fa-download"></i> Télécharger le rapport JSON
+                    </button>
+                    <button id="downloadCSV" class="btn btn-success" style="display:none;">
+                        <i class="fas fa-file-csv"></i> Télécharger CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
