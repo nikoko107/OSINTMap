@@ -13,16 +13,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Charger la configuration
         await loadConfig();
-        
+
         // Initialiser la carte
         initializeMap();
-        
+
         // Initialiser les événements
         initializeEventListeners();
-        
+
         // Peupler les catégories initiales
         populateCategories();
-        
+
         console.log('Application OSINT initialisée avec succès');
     } catch (error) {
         console.error('Erreur lors de l\'initialisation:', error);
@@ -345,16 +345,16 @@ function initializeMap() {
     try {
         const defaultLoc = config.defaultLocation;
         map = L.map('map').setView([defaultLoc.lat, defaultLoc.lon], 13);
-        
+
         // Ajouter les tuiles OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-        
+
         // Créer un groupe de marqueurs
         markersLayer = L.layerGroup().addTo(map);
-        
+
         console.log('Carte initialisée avec succès');
     } catch (error) {
         console.error('Erreur lors de l\'initialisation de la carte:', error);
@@ -368,17 +368,17 @@ function initializeEventListeners() {
     const addComplementBtn = document.getElementById('addComplement');
     const clearAllBtn = document.getElementById('clearAll');
     const copyQueryBtn = document.getElementById('copyQuery');
-    
+
     // Événements du formulaire
     form.addEventListener('submit', handleFormSubmit);
     form.addEventListener('change', handleFormChange);
     form.addEventListener('input', handleFormChange);
-    
+
     // Boutons de contrôle
     addComplementBtn.addEventListener('click', addComplement);
     clearAllBtn.addEventListener('click', clearAllConditions);
     copyQueryBtn.addEventListener('click', copyQueryToClipboard);
-    
+
         // Initialiser l'interface après un délai
         setTimeout(() => {
             initializeBboxControls();
@@ -391,10 +391,10 @@ function initializeEventListeners() {
 function populateCategories() {
     const categorySelect = document.querySelector('.category');
     if (!categorySelect) return;
-    
+
     // Vider les options existantes sauf la première
     categorySelect.innerHTML = '<option value="">Sélectionner une catégorie</option>';
-    
+
     // Ajouter les catégories depuis la configuration
     Object.keys(config.categories).forEach(categoryKey => {
         const category = config.categories[categoryKey];
@@ -418,21 +418,21 @@ function handleFormChange(event) {
 function updateTypesContainer(categorySelect) {
     const typesContainer = categorySelect.closest('.condition-fields').querySelector('.types-container');
     if (!typesContainer) return;
-    
+
     const selectedCategory = categorySelect.value;
-    
+
     // Vider le container
     typesContainer.innerHTML = '';
-    
+
     if (!selectedCategory || !config.categories[selectedCategory]) {
         typesContainer.innerHTML = '<p class="no-types">Sélectionnez d\'abord une catégorie</p>';
         typesContainer.classList.add('empty');
         return;
     }
-    
+
     typesContainer.classList.remove('empty');
     const types = config.categories[selectedCategory].types;
-    
+
     // Générer un ID unique basé sur le contexte
     let uniqueId;
     if (categorySelect.closest('.main-search')) {
@@ -443,21 +443,21 @@ function updateTypesContainer(categorySelect) {
     } else {
         uniqueId = 'default';
     }
-    
+
     Object.keys(types).forEach(typeKey => {
         const checkboxDiv = document.createElement('div');
         checkboxDiv.className = 'type-checkbox';
-        
+
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.id = `type_${uniqueId}_${typeKey}`;
         checkbox.value = typeKey;
         checkbox.name = `types_${uniqueId}`;
-        
+
         const label = document.createElement('label');
         label.htmlFor = checkbox.id;
         label.textContent = `${types[typeKey]} (${selectedCategory}=${typeKey})`;
-        
+
         checkboxDiv.appendChild(checkbox);
         checkboxDiv.appendChild(label);
         typesContainer.appendChild(checkboxDiv);
@@ -468,9 +468,9 @@ function updateTypesContainer(categorySelect) {
 function updateNameInput(nameModeSelect) {
     const nameInput = nameModeSelect.parentElement.querySelector('.name');
     if (!nameInput) return;
-    
+
     const mode = nameModeSelect.value;
-    
+
     if (mode === '') {
         nameInput.disabled = true;
         nameInput.value = '';
@@ -494,12 +494,12 @@ function updateNameInput(nameModeSelect) {
 // Ajouter une nouvelle condition
 function addCondition() {
     conditionCount++;
-    
+
     const conditionsContainer = document.getElementById('conditionsContainer');
     const newConditionGroup = document.createElement('div');
     newConditionGroup.className = 'condition-group';
     newConditionGroup.id = `conditionGroup${conditionCount}`;
-    
+
     newConditionGroup.innerHTML = `
         <div class="condition" id="condition${conditionCount}">
             <div class="condition-header">
@@ -508,7 +508,7 @@ function addCondition() {
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="condition-fields">
                 <div class="field-group">
                     <label>Catégorie :</label>
@@ -516,14 +516,14 @@ function addCondition() {
                         <option value="">Sélectionner une catégorie</option>
                     </select>
                 </div>
-                
+
                 <div class="field-group">
                     <label>Types (sélection multiple) :</label>
                     <div class="types-container" name="types${conditionCount}">
                         <p class="no-types">Sélectionnez d'abord une catégorie</p>
                     </div>
                 </div>
-                
+
                 <div class="field-group">
                     <label>Recherche par nom (optionnel) :</label>
                     <div class="name-search">
@@ -536,7 +536,7 @@ function addCondition() {
                         <input type="text" class="name" name="name${conditionCount}" placeholder="Texte à rechercher" disabled>
                     </div>
                 </div>
-                
+
                 <div class="field-group">
                     <label>Distance de recherche :</label>
                     <div class="distance-input">
@@ -547,13 +547,13 @@ function addCondition() {
             </div>
         </div>
     `;
-    
+
     conditionsContainer.appendChild(newConditionGroup);
-    
+
     // Peupler les catégories pour la nouvelle condition
     const newCategorySelect = newConditionGroup.querySelector('.category');
     populateCategorySelect(newCategorySelect);
-    
+
     // Afficher le bouton de suppression pour toutes les conditions sauf la première
     updateRemoveButtons();
 }
@@ -561,7 +561,7 @@ function addCondition() {
 // Peupler un select de catégorie spécifique
 function populateCategorySelect(categorySelect) {
     categorySelect.innerHTML = '<option value="">Sélectionner une catégorie</option>';
-    
+
     Object.keys(config.categories).forEach(categoryKey => {
         const category = config.categories[categoryKey];
         const option = document.createElement('option');
@@ -603,7 +603,7 @@ function clearAllConditions() {
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                
+
                 <div class="condition-fields">
                     <div class="field-group">
                         <label>Catégorie :</label>
@@ -611,14 +611,14 @@ function clearAllConditions() {
                             <option value="">Sélectionner une catégorie</option>
                         </select>
                     </div>
-                    
+
                     <div class="field-group">
                         <label>Types (sélection multiple) :</label>
                         <div class="types-container" name="types1">
                             <p class="no-types">Sélectionnez d'abord une catégorie</p>
                         </div>
                     </div>
-                    
+
                     <div class="field-group">
                         <label>Recherche par nom (optionnel) :</label>
                         <div class="name-search">
@@ -631,7 +631,7 @@ function clearAllConditions() {
                             <input type="text" class="name" name="name1" placeholder="Texte à rechercher" disabled>
                         </div>
                     </div>
-                    
+
                     <div class="field-group">
                         <label>Distance de recherche :</label>
                         <div class="distance-input">
@@ -643,7 +643,7 @@ function clearAllConditions() {
             </div>
         </div>
     `;
-    
+
     conditionCount = 1;
     populateCategories();
     clearResults();
@@ -654,7 +654,7 @@ function clearAllConditions() {
 function addOperator(operator) {
     const queryDisplay = document.getElementById('queryDisplay');
     const currentQuery = queryDisplay.textContent;
-    
+
     if (currentQuery.trim()) {
         queryDisplay.textContent = currentQuery + ' ' + operator + ' ';
     } else {
@@ -665,25 +665,25 @@ function addOperator(operator) {
 // Gérer la soumission du formulaire
 async function handleFormSubmit(event) {
     event.preventDefault();
-    
+
     try {
         showLoading(true);
-        
+
         // Construire la requête selon le nouveau style
         const query = buildNewStyleQuery();
-        
+
         // Afficher la requête
         document.getElementById('queryDisplay').textContent = query;
-        
+
         // Exécuter la recherche
         const results = await executeOverpassQuery(query);
-        
+
         // Afficher les résultats
         displayResults(results);
-        
+
         // Préparer les exports
         prepareExports(results);
-        
+
     } catch (error) {
         console.error('Erreur lors de la recherche:', error);
         showError('Erreur lors de la recherche: ' + error.message);
@@ -696,25 +696,25 @@ async function handleFormSubmit(event) {
 function collectConditions() {
     const conditions = [];
     const conditionGroups = document.querySelectorAll('.condition-group');
-    
+
     conditionGroups.forEach((group, index) => {
         const condition = group.querySelector('.condition');
         const conditionId = condition.id.replace('condition', '');
-        
+
         const category = condition.querySelector('.category').value;
         const distance = condition.querySelector('.distance').value;
-        
+
         // Collecter les types sélectionnés (cases à cocher)
         const selectedTypes = [];
         const typeCheckboxes = condition.querySelectorAll('.types-container input[type="checkbox"]:checked');
         typeCheckboxes.forEach(checkbox => {
             selectedTypes.push(checkbox.value);
         });
-        
+
         // Collecter les informations de recherche par nom
         const nameMode = condition.querySelector('.name-mode').value;
         const nameValue = condition.querySelector('.name').value;
-        
+
         if (category) {
             conditions.push({
                 id: conditionId,
@@ -726,41 +726,24 @@ function collectConditions() {
             });
         }
     });
-    
+
     return conditions;
 }
 
 // Construire la requête Overpass (mode standard)
 function buildOverpassQuery(conditions) {
     let query = '[out:json][timeout:25];\n(\n';
-    
+
     conditions.forEach((condition, index) => {
         const { category, types, nameMode, nameValue, distance } = condition;
-        
+
         // Déterminer la zone de recherche
         const defaultLoc = config.defaultLocation;
         const area = `(around:${distance},${defaultLoc.lat},${defaultLoc.lon})`;
-        
-        // Construire la requête pour cette condition
-        let conditionQuery = '';
-        
-        if (types && types.length > 0) {
-            // Recherche avec types spécifiques sélectionnés (OU entre les types)
-            types.forEach(type => {
-                conditionQuery += `  node["${category}"="${type}"]${area};\n`;
-                conditionQuery += `  way["${category}"="${type}"]${area};\n`;
-                conditionQuery += `  relation["${category}"="${type}"]${area};\n`;
-            });
-        } else {
-            // Recherche par catégorie seulement (tous les types)
-            conditionQuery = `  node["${category}"]${area};\n`;
-            conditionQuery += `  way["${category}"]${area};\n`;
-            conditionQuery += `  relation["${category}"]${area};\n`;
-        }
-        
-        // Ajouter le filtre par nom si spécifié
+
+        // Construire le filtre par nom si spécifié
+        let nameFilter = '';
         if (nameMode && nameValue && nameValue.trim()) {
-            let nameFilter = '';
             switch (nameMode) {
                 case 'exact':
                     nameFilter = `["name"="${nameValue}"]`;
@@ -772,28 +755,29 @@ function buildOverpassQuery(conditions) {
                     nameFilter = `["name"~"^${nameValue}",i]`;
                     break;
             }
-            
-            if (nameFilter) {
-                conditionQuery = conditionQuery.replace(/\](\(around:[^)]+\));/g, `]${nameFilter}$1;`);
-            }
         }
-        
-        query += conditionQuery;
+
+        if (types && types.length > 0) {
+            const typesRegex = types.join('|');
+            query += `  nwr["${category}"~"^(${typesRegex})$"]${nameFilter}${area};\n`;
+        } else {
+            query += `  nwr["${category}"]${nameFilter}${area};\n`;
+        }
     });
-    
-    query += ');\nout geom;';
-    
+
+    query += ');\nout center;';
+
     return query;
 }
 
 // Exécuter la requête Overpass
 async function executeOverpassQuery(query) {
     const servers = config.overpassServers || ['https://overpass-api.de/api/interpreter'];
-    
+
     for (let serverUrl of servers) {
         try {
             console.log(`Tentative de requête sur ${serverUrl}`);
-            
+
             const response = await fetch(serverUrl, {
                 method: 'POST',
                 headers: {
@@ -801,20 +785,20 @@ async function executeOverpassQuery(query) {
                 },
                 body: `data=${encodeURIComponent(query)}`
             });
-            
+
             if (!response.ok) {
                 throw new Error(`Erreur HTTP: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             if (data.elements) {
                 console.log(`Requête réussie sur ${serverUrl}, ${data.elements.length} éléments trouvés`);
                 return data;
             } else {
                 throw new Error('Réponse invalide du serveur');
             }
-            
+
         } catch (error) {
             console.warn(`Échec sur ${serverUrl}:`, error);
             if (serverUrl === servers[servers.length - 1]) {
@@ -828,18 +812,18 @@ async function executeOverpassQuery(query) {
 function displayResults(data) {
     // Effacer les marqueurs existants
     markersLayer.clearLayers();
-    
+
     const elements = data.elements || [];
     currentResults = elements;
-    
+
     // Obtenir les données de recherche pour identifier les types d'éléments
     const searchData = collectMainSearchAndComplements();
-    
+
     // Créer les marqueurs et compter les éléments valides
     const bounds = [];
     let validElementsCount = 0;
     const validElements = [];
-    
+
     // Couleurs pour différencier les types d'éléments
     const markerColors = {
         main: 'blue',      // Éléments principaux en bleu
@@ -849,44 +833,40 @@ function displayResults(data) {
         complement4: 'violet',  // Quatrième complément en violet
         complement5: 'yellow'   // Cinquième complément en jaune
     };
-    
+
     elements.forEach((element, index) => {
         let lat, lon;
-        
-        // Déterminer les coordonnées selon le type d'élément
+
+        // Déterminer les coordonnées
         if (element.type === 'node') {
             lat = element.lat;
             lon = element.lon;
-        } else if (element.type === 'way' && element.geometry) {
-            // Prendre le centre du way
-            const coords = element.geometry;
-            lat = coords.reduce((sum, coord) => sum + coord.lat, 0) / coords.length;
-            lon = coords.reduce((sum, coord) => sum + coord.lon, 0) / coords.length;
-        } else if (element.type === 'relation' && element.members) {
-            // Ignorer les relations pour l'instant
-            return;
+        } else if (element.center) { // Pour les ways et relations avec "out center"
+            lat = element.center.lat;
+            lon = element.center.lon;
         } else {
+            // Coordonnées non trouvées, on ignore l'élément
             return;
         }
-        
+
         if (lat && lon) {
             validElementsCount++;
             bounds.push([lat, lon]);
-            
+
             // Ajouter les coordonnées à l'élément pour la liste
             element.calculatedLat = lat;
             element.calculatedLon = lon;
             element.resultIndex = validElementsCount - 1;
-            
+
             // Déterminer le type d'élément (principal ou complément)
             const elementType = determineElementType(element, searchData);
             element.elementType = elementType;
-            
+
             validElements.push(element);
-            
+
             // Choisir la couleur du marqueur selon le type
             const markerColor = markerColors[elementType] || 'blue';
-            
+
             // Créer le marqueur avec la couleur appropriée
             const marker = L.marker([lat, lon], {
                 icon: L.icon({
@@ -898,16 +878,16 @@ function displayResults(data) {
                     shadowSize: [41, 41]
                 })
             });
-            
+
             // Créer le popup
             const tags = element.tags || {};
             const name = tags.name || 'Sans nom';
             const category = Object.keys(tags).find(key => config.categories[key]) || 'Inconnu';
             const type = tags[category] || 'Non spécifié';
-            
+
             // Ajouter l'information du type d'élément dans le popup
             const elementTypeLabel = getElementTypeLabel(elementType);
-            
+
             const popupContent = `
                 <div>
                     <h4>${name}</h4>
@@ -925,38 +905,38 @@ function displayResults(data) {
                     </div>
                 </div>
             `;
-            
+
             marker.bindPopup(popupContent);
-            
+
             // Stocker la référence de l'élément dans le marqueur
             marker.elementData = element;
-            
+
             // Ajouter le clic droit pour les liens
             marker.on('contextmenu', () => {
                 window.open(`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=18`, '_blank');
             });
-            
+
             markersLayer.addLayer(marker);
         }
     });
-    
+
     // Afficher le nombre de résultats valides avec répartition par type
     const resultsCount = document.getElementById('resultsCount');
     const typeBreakdown = getResultsBreakdown(validElements);
     resultsCount.innerHTML = `${validElementsCount} résultat(s) trouvé(s)<br><small>${typeBreakdown}</small>`;
     resultsCount.style.display = 'block';
-    
+
     if (validElementsCount === 0) {
         showError('Aucun résultat trouvé pour cette recherche');
         hideResultsList();
         return;
     }
-    
+
     // Ajuster la vue de la carte pour inclure tous les marqueurs
     if (bounds.length > 0) {
         map.fitBounds(bounds, { padding: [20, 20] });
     }
-    
+
     // Afficher la liste des résultats
     populateResultsList(validElements);
 }
@@ -964,19 +944,19 @@ function displayResults(data) {
 // Déterminer le type d'élément (principal ou complément)
 function determineElementType(element, searchData) {
     const tags = element.tags || {};
-    
+
     // Vérifier si c'est un élément principal
     if (searchData.mainSearch) {
         const mainCategory = searchData.mainSearch.category;
         const mainTypes = searchData.mainSearch.types || [];
-        
+
         if (tags[mainCategory]) {
             if (mainTypes.length === 0 || mainTypes.includes(tags[mainCategory])) {
                 // Vérifier aussi le nom si spécifié
                 if (searchData.mainSearch.nameMode && searchData.mainSearch.nameValue) {
                     const nameValue = searchData.mainSearch.nameValue.toLowerCase();
                     const elementName = (tags.name || '').toLowerCase();
-                    
+
                     switch (searchData.mainSearch.nameMode) {
                         case 'exact':
                             if (elementName === nameValue) return 'main';
@@ -994,20 +974,20 @@ function determineElementType(element, searchData) {
             }
         }
     }
-    
+
     // Vérifier si c'est un élément de complément
     for (let i = 0; i < searchData.complements.length; i++) {
         const complement = searchData.complements[i];
         const complementCategory = complement.category;
         const complementTypes = complement.types || [];
-        
+
         if (tags[complementCategory]) {
             if (complementTypes.length === 0 || complementTypes.includes(tags[complementCategory])) {
                 // Vérifier aussi le nom si spécifié
                 if (complement.nameMode && complement.nameValue) {
                     const nameValue = complement.nameValue.toLowerCase();
                     const elementName = (tags.name || '').toLowerCase();
-                    
+
                     switch (complement.nameMode) {
                         case 'exact':
                             if (elementName === nameValue) return `complement${i + 1}`;
@@ -1025,7 +1005,7 @@ function determineElementType(element, searchData) {
             }
         }
     }
-    
+
     // Par défaut, considérer comme élément principal
     return 'main';
 }
@@ -1053,17 +1033,17 @@ function getElementTypeLabel(elementType) {
 // Obtenir la répartition des résultats par type
 function getResultsBreakdown(elements) {
     const breakdown = {};
-    
+
     elements.forEach(element => {
         const type = element.elementType || 'main';
         breakdown[type] = (breakdown[type] || 0) + 1;
     });
-    
+
     const parts = [];
     if (breakdown.main) {
         parts.push(`🎯 ${breakdown.main} principal(aux)`);
     }
-    
+
     for (let i = 1; i <= 5; i++) {
         const key = `complement${i}`;
         if (breakdown[key]) {
@@ -1071,7 +1051,7 @@ function getResultsBreakdown(elements) {
             parts.push(`${colors[i-1]} ${breakdown[key]} complément ${i}`);
         }
     }
-    
+
     return parts.join(' • ');
 }
 
@@ -1081,23 +1061,23 @@ function populateResultsList(elements) {
     const mainResultsTableBody = document.getElementById('mainResultsTableBody');
     const complementResultsTableBody = document.getElementById('complementResultsTableBody');
     const complementResultsSection = document.getElementById('complementResultsSection');
-    
+
     if (!resultsListContainer || !mainResultsTableBody || !complementResultsTableBody) return;
-    
+
     // Vider les tables existantes
     mainResultsTableBody.innerHTML = '';
     complementResultsTableBody.innerHTML = '';
-    
+
     // Séparer les éléments principaux des compléments
     const mainElements = elements.filter(element => element.elementType === 'main');
     const complementElements = elements.filter(element => element.elementType !== 'main');
-    
+
     // Peupler la table des résultats principaux
     mainElements.forEach((element, index) => {
         const row = createResultRow(element, index, false);
         mainResultsTableBody.appendChild(row);
     });
-    
+
     // Peupler la table des compléments si il y en a
     if (complementElements.length > 0) {
         complementElements.forEach((element, index) => {
@@ -1105,17 +1085,17 @@ function populateResultsList(elements) {
             const row = createResultRow(element, globalIndex, true);
             complementResultsTableBody.appendChild(row);
         });
-        
+
         // Afficher la section des compléments
         complementResultsSection.style.display = 'block';
     } else {
         // Masquer la section des compléments
         complementResultsSection.style.display = 'none';
     }
-    
+
     // Afficher la liste
     resultsListContainer.style.display = 'block';
-    
+
     // Stocker les éléments pour les fonctions de zoom
     window.currentValidElements = elements;
 }
@@ -1128,17 +1108,17 @@ function createResultRow(element, index, isComplement) {
     const type = tags[category] || 'Non spécifié';
     const categoryLabel = config.categories[category]?.label || category;
     const typeLabel = config.categories[category]?.types[type] || type;
-    
+
     const lat = element.calculatedLat;
     const lon = element.calculatedLon;
-    
+
     const row = document.createElement('tr');
     row.dataset.elementId = element.id;
     row.dataset.resultIndex = index;
-    
+
     // Contenu de base pour toutes les lignes
     let rowContent = '';
-    
+
     // Ajouter la colonne "Rôle" pour les compléments
     if (isComplement) {
         const elementTypeLabel = getElementTypeLabel(element.elementType);
@@ -1148,7 +1128,7 @@ function createResultRow(element, index, isComplement) {
             </td>
         `;
     }
-    
+
     // Colonnes communes
     rowContent += `
         <td>
@@ -1174,36 +1154,36 @@ function createResultRow(element, index, isComplement) {
             </div>
         </td>
     `;
-    
+
     row.innerHTML = rowContent;
-    
+
     // Ajouter l'événement de clic sur la ligne
     row.addEventListener('click', function() {
         selectResultRow(this);
         zoomToResult(index);
     });
-    
+
     return row;
 }
 
 // Zoomer sur un résultat spécifique
 function zoomToResult(resultIndex) {
     if (!window.currentValidElements || !window.currentValidElements[resultIndex]) return;
-    
+
     const element = window.currentValidElements[resultIndex];
     const lat = element.calculatedLat;
     const lon = element.calculatedLon;
-    
+
     if (!lat || !lon) return;
-    
+
     // Zoomer sur l'élément
     map.setView([lat, lon], 18);
-    
+
     // Trouver et ouvrir le popup du marqueur correspondant
     markersLayer.eachLayer(marker => {
         if (marker.elementData && marker.elementData.id === element.id) {
             marker.openPopup();
-            
+
             // Effet visuel temporaire
             const originalIcon = marker.getIcon();
             const highlightIcon = L.icon({
@@ -1214,16 +1194,16 @@ function zoomToResult(resultIndex) {
                 popupAnchor: [1, -34],
                 shadowSize: [41, 41]
             });
-            
+
             marker.setIcon(highlightIcon);
-            
+
             // Restaurer l'icône originale après 2 secondes
             setTimeout(() => {
                 marker.setIcon(originalIcon);
             }, 2000);
         }
     });
-    
+
     // Sélectionner la ligne correspondante dans la table
     const rows = document.querySelectorAll('#resultsTable tbody tr');
     rows.forEach(row => {
@@ -1231,7 +1211,7 @@ function zoomToResult(resultIndex) {
             selectResultRow(row);
         }
     });
-    
+
     showSuccess(`Zoom sur : ${element.tags?.name || 'Élément sélectionné'}`);
 }
 
@@ -1240,10 +1220,10 @@ function selectResultRow(row) {
     // Désélectionner toutes les autres lignes dans toutes les tables
     const allRows = document.querySelectorAll('#mainResultsTable tbody tr, #complementResultsTable tbody tr');
     allRows.forEach(r => r.classList.remove('selected'));
-    
+
     // Sélectionner la ligne cliquée
     row.classList.add('selected');
-    
+
     // Faire défiler pour s'assurer que la ligne est visible
     row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -1254,7 +1234,7 @@ function hideResultsList() {
     if (resultsListContainer) {
         resultsListContainer.style.display = 'none';
     }
-    
+
     // Nettoyer les données
     window.currentValidElements = null;
 }
@@ -1263,19 +1243,19 @@ function hideResultsList() {
 function prepareExports(data) {
     const downloadReportBtn = document.getElementById('downloadReport');
     const downloadCSVBtn = document.getElementById('downloadCSV');
-    
+
     // Supprimer les anciens événements
     downloadReportBtn.replaceWith(downloadReportBtn.cloneNode(true));
     downloadCSVBtn.replaceWith(downloadCSVBtn.cloneNode(true));
-    
+
     // Récupérer les nouveaux éléments
     const newDownloadReportBtn = document.getElementById('downloadReport');
     const newDownloadCSVBtn = document.getElementById('downloadCSV');
-    
+
     // Ajouter les événements de clic
     newDownloadReportBtn.addEventListener('click', () => exportJSON(data));
     newDownloadCSVBtn.addEventListener('click', () => exportCSV(data));
-    
+
     // Afficher les boutons
     newDownloadReportBtn.style.display = 'inline-flex';
     newDownloadCSVBtn.style.display = 'inline-flex';
@@ -1290,11 +1270,11 @@ function exportJSON(data) {
         boundingBox: boundingBox,
         elements: data.elements
     };
-    
+
     const jsonContent = JSON.stringify(jsonReport, null, 2);
     const blob = new Blob([jsonContent], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `osint-report-${new Date().toISOString().split('T')[0]}.json`;
@@ -1302,7 +1282,7 @@ function exportJSON(data) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     showSuccess('Rapport JSON téléchargé avec succès');
 }
 
@@ -1311,7 +1291,7 @@ function exportCSV(data) {
     const csvContent = generateCSV(data.elements);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `osint-results-${new Date().toISOString().split('T')[0]}.csv`;
@@ -1319,7 +1299,7 @@ function exportCSV(data) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     showSuccess('Fichier CSV téléchargé avec succès');
 }
 
@@ -1327,25 +1307,24 @@ function exportCSV(data) {
 function generateCSV(elements) {
     const headers = ['ID', 'Type', 'Nom', 'Catégorie', 'Sous-type', 'Latitude', 'Longitude', 'Tags'];
     let csv = headers.join(',') + '\n';
-    
+
     elements.forEach(element => {
         const tags = element.tags || {};
         const name = (tags.name || '').replace(/"/g, '""');
         const category = Object.keys(tags).find(key => config.categories[key]) || '';
         const subtype = tags[category] || '';
-        
+
         let lat = '', lon = '';
         if (element.type === 'node') {
             lat = element.lat;
             lon = element.lon;
-        } else if (element.type === 'way' && element.geometry) {
-            const coords = element.geometry;
-            lat = coords.reduce((sum, coord) => sum + coord.lat, 0) / coords.length;
-            lon = coords.reduce((sum, coord) => sum + coord.lon, 0) / coords.length;
+        } else if (element.center) { // Pour les ways et relations
+            lat = element.center.lat;
+            lon = element.center.lon;
         }
-        
+
         const tagsStr = JSON.stringify(tags).replace(/"/g, '""');
-        
+
         const row = [
             element.id,
             element.type,
@@ -1356,22 +1335,22 @@ function generateCSV(elements) {
             lon,
             `"${tagsStr}"`
         ];
-        
+
         csv += row.join(',') + '\n';
     });
-    
+
     return csv;
 }
 
 // Copier la requête dans le presse-papiers
 async function copyQueryToClipboard() {
     const query = document.getElementById('queryDisplay').textContent;
-    
+
     if (!query.trim()) {
         showError('Aucune requête à copier');
         return;
     }
-    
+
     try {
         await navigator.clipboard.writeText(query);
         showSuccess('Requête copiée dans le presse-papiers');
@@ -1386,11 +1365,11 @@ function clearResults() {
     if (markersLayer) {
         markersLayer.clearLayers();
     }
-    
+
     document.getElementById('resultsCount').style.display = 'none';
     document.getElementById('downloadReport').style.display = 'none';
     document.getElementById('downloadCSV').style.display = 'none';
-    
+
     currentResults = [];
 }
 
@@ -1406,14 +1385,14 @@ function showError(message) {
     if (existingError) {
         existingError.remove();
     }
-    
+
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
     errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
-    
+
     const container = document.querySelector('.search-panel');
     container.insertBefore(errorDiv, container.firstChild);
-    
+
     setTimeout(() => {
         errorDiv.remove();
     }, 5000);
@@ -1425,14 +1404,14 @@ function showSuccess(message) {
     if (existingSuccess) {
         existingSuccess.remove();
     }
-    
+
     const successDiv = document.createElement('div');
     successDiv.className = 'success-message';
     successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    
+
     const container = document.querySelector('.search-panel');
     container.insertBefore(successDiv, container.firstChild);
-    
+
     setTimeout(() => {
         successDiv.remove();
     }, 3000);
@@ -1443,7 +1422,7 @@ function handleSearchModeChange(event) {
     const searchMode = event.target.value;
     const conditionsContainer = document.getElementById('conditionsContainer');
     const operatorsDiv = document.querySelector('.operators');
-    
+
     if (searchMode === 'proximity') {
         // Mode proximité croisée : adapter l'interface
         updateInterfaceForProximityMode();
@@ -1453,7 +1432,7 @@ function handleSearchModeChange(event) {
         updateInterfaceForStandardMode();
         operatorsDiv.style.display = 'flex'; // Afficher les opérateurs logiques
     }
-    
+
     // Effacer les conditions existantes et recommencer
     clearAllConditions();
 }
@@ -1468,11 +1447,11 @@ function updateInterfaceForProximityMode() {
         } else {
             conditionHeader.textContent = `Critère de proximité ${index}`;
         }
-        
+
         // Ajouter des champs spécifiques au mode proximité
         addProximityFields(group, index);
     });
-    
+
     // Mettre à jour le texte du bouton d'ajout
     const addConditionBtn = document.getElementById('addCondition');
     if (addConditionBtn) {
@@ -1486,7 +1465,7 @@ function updateInterfaceForStandardMode() {
     conditionGroups.forEach((group, index) => {
         const conditionHeader = group.querySelector('.condition-number');
         conditionHeader.textContent = `Condition ${index + 1}`;
-        
+
         // Supprimer les champs spécifiques au mode proximité
         removeProximityFields(group);
     });
@@ -1496,7 +1475,7 @@ function updateInterfaceForStandardMode() {
 function addProximityFields(conditionGroup, index) {
     const conditionFields = conditionGroup.querySelector('.condition-fields');
     const distanceGroup = conditionFields.querySelector('.field-group:last-child');
-    
+
     if (index > 0) {
         // Pour les critères de proximité, ajouter distance min/max
         const existingProximityFields = conditionFields.querySelector('.proximity-fields');
@@ -1519,10 +1498,10 @@ function addProximityFields(conditionGroup, index) {
                     </div>
                 </div>
             `;
-            
+
             // Insérer avant le champ distance existant
             conditionFields.insertBefore(proximityFieldsDiv, distanceGroup);
-            
+
             // Masquer le champ distance standard
             distanceGroup.style.display = 'none';
         }
@@ -1535,7 +1514,7 @@ function removeProximityFields(conditionGroup) {
     if (proximityFields) {
         proximityFields.remove();
     }
-    
+
     // Réafficher le champ distance standard
     const distanceGroup = conditionGroup.querySelector('.field-group:last-child');
     if (distanceGroup) {
@@ -1546,14 +1525,14 @@ function removeProximityFields(conditionGroup) {
 // Construire la requête Overpass pour le mode proximité croisée
 function buildProximityQuery(conditions) {
     if (conditions.length === 0) return '';
-    
+
     // Obtenir la zone géographique sélectionnée
     const geoArea = getSelectedGeographicArea();
-    
+
     // Définir la zone de recherche
     let query = '[out:json][timeout:25];\n';
     query += `// Définir la zone de recherche : ${geoArea.name}\n`;
-    
+
     // Si c'est une bounding box, pas besoin de définir une zone nommée
     if (boundingBox) {
         query += '\n';
@@ -1562,16 +1541,16 @@ function buildProximityQuery(conditions) {
         query += `  ${geoArea.query}\n`;
         query += ')->.searchArea;\n\n';
     }
-    
+
     // Première condition = éléments à rechercher
     const targetCondition = conditions[0];
     const proximityConditions = conditions.slice(1);
-    
+
     if (proximityConditions.length === 0) {
         // Si pas de critères de proximité, recherche standard dans la zone
         return buildStandardQueryInArea(targetCondition);
     }
-    
+
     // Construire les ensembles de référence pour chaque critère de proximité
     proximityConditions.forEach((condition, index) => {
         query += `// Critère de proximité ${index + 1}: ${getConditionDescription(condition)}\n`;
@@ -1579,20 +1558,20 @@ function buildProximityQuery(conditions) {
         query += buildConditionQuery(condition, 'searchArea');
         query += `)->.proximity${index + 1};\n\n`;
     });
-    
+
     // Construire la requête principale avec intersections de proximité
     query += '// Recherche des éléments cibles avec critères de proximité\n';
     query += '(\n';
-    
+
     // Construire la requête pour les éléments cibles
     const targetQuery = buildConditionQuery(targetCondition, 'searchArea');
-    
+
     // Appliquer les filtres de proximité
     let proximityFilters = '';
     proximityConditions.forEach((condition, index) => {
         const minDist = condition.minDistance || 0;
         const maxDist = condition.maxDistance || condition.distance || 1000;
-        
+
         if (minDist > 0) {
             // Approche avec distance min/max (plus complexe)
             proximityFilters += `(around.proximity${index + 1}:${maxDist})`;
@@ -1601,7 +1580,7 @@ function buildProximityQuery(conditions) {
             proximityFilters += `(around.proximity${index + 1}:${maxDist})`;
         }
     });
-    
+
     // Appliquer les filtres à chaque type d'élément
     const lines = targetQuery.split('\n').filter(line => line.trim());
     lines.forEach(line => {
@@ -1610,7 +1589,7 @@ function buildProximityQuery(conditions) {
             query += `  ${modifiedLine}\n`;
         }
     });
-    
+
     // Gestion des distances minimales si spécifiées
     const hasMinDistances = proximityConditions.some(c => c.minDistance > 0);
     if (hasMinDistances) {
@@ -1618,7 +1597,7 @@ function buildProximityQuery(conditions) {
         query += '// Exclure les éléments trop proches (distances minimales)\n';
         query += '(\n';
         query += '  ._;\n';
-        
+
         proximityConditions.forEach((condition, index) => {
             const minDist = condition.minDistance;
             if (minDist > 0) {
@@ -1626,14 +1605,14 @@ function buildProximityQuery(conditions) {
                 query += `  - way(around.proximity${index + 1}:${minDist});\n`;
             }
         });
-        
+
         query += ');\n';
     } else {
         query += ');\n';
     }
-    
+
     query += '\n// Sortir les résultats\nout geom;';
-    
+
     return query;
 }
 
@@ -1647,7 +1626,7 @@ function buildStandardQueryInArea(condition) {
     query += '(\n';
     query += buildConditionQuery(condition, 'searchArea');
     query += ');\nout geom;';
-    
+
     return query;
 }
 
@@ -1655,7 +1634,7 @@ function buildStandardQueryInArea(condition) {
 function buildConditionQuery(condition, areaVar) {
     const { category, types, nameMode, nameValue } = condition;
     let conditionQuery = '';
-    
+
     // Construire le filtre par nom si spécifié
     let nameFilter = '';
     if (nameMode && nameValue && nameValue.trim()) {
@@ -1671,7 +1650,7 @@ function buildConditionQuery(condition, areaVar) {
                 break;
         }
     }
-    
+
     // Déterminer le filtre de zone
     let areaFilter = '';
     if (boundingBox) {
@@ -1680,7 +1659,7 @@ function buildConditionQuery(condition, areaVar) {
     } else {
         areaFilter = `(area.${areaVar})`;
     }
-    
+
     if (types && types.length > 0) {
         // Recherche avec types spécifiques sélectionnés
         types.forEach(type => {
@@ -1694,7 +1673,7 @@ function buildConditionQuery(condition, areaVar) {
         conditionQuery += `  way["${category}"]${nameFilter}${areaFilter};\n`;
         conditionQuery += `  relation["${category}"]${nameFilter}${areaFilter};\n`;
     }
-    
+
     return conditionQuery;
 }
 
@@ -1702,12 +1681,12 @@ function buildConditionQuery(condition, areaVar) {
 function getConditionDescription(condition) {
     const { category, types, nameMode, nameValue } = condition;
     let description = config.categories[category]?.label || category;
-    
+
     if (types && types.length > 0) {
         const typeLabels = types.map(type => config.categories[category]?.types[type] || type);
         description += ` (${typeLabels.join(', ')})`;
     }
-    
+
     if (nameMode && nameValue) {
         switch (nameMode) {
             case 'exact':
@@ -1721,7 +1700,7 @@ function getConditionDescription(condition) {
                 break;
         }
     }
-    
+
     return description;
 }
 
@@ -1730,27 +1709,27 @@ function collectConditionsWithProximity() {
     const conditions = [];
     const conditionGroups = document.querySelectorAll('.condition-group');
     const searchMode = 'proximity'; // Mode fixé à proximité
-    
+
     conditionGroups.forEach((group, index) => {
         const condition = group.querySelector('.condition');
         const conditionId = condition.id.replace('condition', '');
-        
+
         const category = condition.querySelector('.category').value;
-        
+
         // Collecter les types sélectionnés
         const selectedTypes = [];
         const typeCheckboxes = condition.querySelectorAll('.types-container input[type="checkbox"]:checked');
         typeCheckboxes.forEach(checkbox => {
             selectedTypes.push(checkbox.value);
         });
-        
+
         // Collecter les informations de recherche par nom
         const nameMode = condition.querySelector('.name-mode').value;
         const nameValue = condition.querySelector('.name').value;
-        
+
         // Collecter les distances selon le mode
         let distance, minDistance, maxDistance;
-        
+
         if (searchMode === 'proximity' && index > 0) {
             // Mode proximité : utiliser min/max
             const minDistInput = condition.querySelector('.min-distance');
@@ -1762,7 +1741,7 @@ function collectConditionsWithProximity() {
             const distanceInput = condition.querySelector('.distance');
             distance = distanceInput ? parseInt(distanceInput.value) || 1000 : 1000;
         }
-        
+
         if (category) {
             conditions.push({
                 id: conditionId,
@@ -1776,7 +1755,7 @@ function collectConditionsWithProximity() {
             });
         }
     });
-    
+
     return conditions;
 }
 
@@ -1784,14 +1763,14 @@ function collectConditionsWithProximity() {
 function populateGeographicZones() {
     const geoLevelSelect = document.getElementById('geoLevel');
     const geoZoneSelect = document.getElementById('geoZone');
-    
+
     if (!geoLevelSelect || !geoZoneSelect) return;
-    
+
     // Événement pour le changement de niveau géographique
     geoLevelSelect.addEventListener('change', function() {
         updateGeographicZones(this.value);
     });
-    
+
     // Initialiser avec le pays (France) par défaut
     updateGeographicZones('country');
 }
@@ -1800,12 +1779,12 @@ function populateGeographicZones() {
 function updateGeographicZones(level) {
     const geoZoneSelect = document.getElementById('geoZone');
     if (!geoZoneSelect) return;
-    
+
     // Vider les options existantes
     geoZoneSelect.innerHTML = '<option value="">Sélectionner une zone</option>';
-    
+
     if (!level || !config.geographicZones[level]) return;
-    
+
     // Ajouter les zones du niveau sélectionné
     Object.keys(config.geographicZones[level]).forEach(zoneName => {
         const option = document.createElement('option');
@@ -1816,7 +1795,7 @@ function updateGeographicZones(level) {
         }
         geoZoneSelect.appendChild(option);
     });
-    
+
     // Mettre à jour la carte si une zone est sélectionnée
     if (level === 'country' && geoZoneSelect.value === 'France') {
         updateMapView('France', level);
@@ -1826,11 +1805,11 @@ function updateGeographicZones(level) {
 // Mettre à jour la vue de la carte selon la zone sélectionnée
 function updateMapView(zoneName, level) {
     if (!map || !config.geographicZones[level] || !config.geographicZones[level][zoneName]) return;
-    
+
     const zoneData = config.geographicZones[level][zoneName];
     const lat = zoneData.lat;
     const lon = zoneData.lon;
-    
+
     // Déterminer le niveau de zoom selon le type de zone
     let zoom;
     switch (level) {
@@ -1849,7 +1828,7 @@ function updateMapView(zoneName, level) {
         default:
             zoom = 6;
     }
-    
+
     map.setView([lat, lon], zoom);
 }
 
@@ -1857,7 +1836,7 @@ function updateMapView(zoneName, level) {
 function getSelectedGeographicArea() {
     const geoLevelSelect = document.getElementById('geoLevel');
     const geoZoneSelect = document.getElementById('geoZone');
-    
+
     if (!geoLevelSelect || !geoZoneSelect) {
         // Valeur par défaut si les éléments n'existent pas
         return {
@@ -1865,10 +1844,10 @@ function getSelectedGeographicArea() {
             name: 'France'
         };
     }
-    
+
     const level = geoLevelSelect.value;
     const zoneName = geoZoneSelect.value;
-    
+
     if (!level || !zoneName || !config.geographicZones[level] || !config.geographicZones[level][zoneName]) {
         // Valeur par défaut
         return {
@@ -1876,7 +1855,7 @@ function getSelectedGeographicArea() {
             name: 'France'
         };
     }
-    
+
     return {
         query: config.geographicZones[level][zoneName].query,
         name: zoneName
@@ -1887,13 +1866,13 @@ function getSelectedGeographicArea() {
 function initializeBboxControls() {
     const drawBboxBtn = document.getElementById('drawBbox');
     const clearBboxBtn = document.getElementById('clearBbox');
-    
+
     if (!drawBboxBtn || !clearBboxBtn) return;
-    
+
     // Événements pour les boutons
     drawBboxBtn.addEventListener('click', startBboxDrawing);
     clearBboxBtn.addEventListener('click', clearBoundingBox);
-    
+
     // Événements de la carte pour le dessin
     map.on('mousedown', onMapMouseDown);
     map.on('mousemove', onMapMouseMove);
@@ -1905,13 +1884,13 @@ function startBboxDrawing() {
     drawingMode = true;
     const drawBboxBtn = document.getElementById('drawBbox');
     const clearBboxBtn = document.getElementById('clearBbox');
-    
+
     drawBboxBtn.textContent = 'Cliquez et glissez sur la carte';
     drawBboxBtn.disabled = true;
-    
+
     // Changer le curseur de la carte
     map.getContainer().style.cursor = 'crosshair';
-    
+
     // Effacer la bounding box existante si elle existe
     if (bboxRectangle) {
         map.removeLayer(bboxRectangle);
@@ -1926,10 +1905,10 @@ let startLatLng = null;
 // Gérer le début du dessin (mousedown)
 function onMapMouseDown(e) {
     if (!drawingMode) return;
-    
+
     isDrawing = true;
     startLatLng = e.latlng;
-    
+
     // Empêcher le déplacement de la carte pendant le dessin
     map.dragging.disable();
     map.touchZoom.disable();
@@ -1942,12 +1921,12 @@ function onMapMouseDown(e) {
 // Gérer le mouvement de la souris (mousemove)
 function onMapMouseMove(e) {
     if (!drawingMode || !isDrawing || !startLatLng) return;
-    
+
     // Supprimer le rectangle temporaire s'il existe
     if (bboxRectangle) {
         map.removeLayer(bboxRectangle);
     }
-    
+
     // Créer un nouveau rectangle temporaire
     const bounds = L.latLngBounds(startLatLng, e.latlng);
     bboxRectangle = L.rectangle(bounds, {
@@ -1960,10 +1939,10 @@ function onMapMouseMove(e) {
 // Gérer la fin du dessin (mouseup)
 function onMapMouseUp(e) {
     if (!drawingMode || !isDrawing || !startLatLng) return;
-    
+
     isDrawing = false;
     drawingMode = false;
-    
+
     // Réactiver les contrôles de la carte
     map.dragging.enable();
     map.touchZoom.enable();
@@ -1971,14 +1950,14 @@ function onMapMouseUp(e) {
     map.scrollWheelZoom.enable();
     map.boxZoom.enable();
     map.keyboard.enable();
-    
+
     // Restaurer le curseur
     map.getContainer().style.cursor = '';
-    
+
     // Finaliser la bounding box
     const endLatLng = e.latlng;
     finalizeBoundingBox(startLatLng, endLatLng);
-    
+
     startLatLng = null;
 }
 
@@ -1989,17 +1968,17 @@ function finalizeBoundingBox(start, end) {
     const north = Math.max(start.lat, end.lat);
     const west = Math.min(start.lng, end.lng);
     const east = Math.max(start.lng, end.lng);
-    
+
     // Stocker la bounding box
     boundingBox = { south, west, north, east };
-    
+
     // Mettre à jour l'interface
     updateBboxDisplay();
-    
+
     // Réactiver le bouton de dessin
     const drawBboxBtn = document.getElementById('drawBbox');
     const clearBboxBtn = document.getElementById('clearBbox');
-    
+
     drawBboxBtn.innerHTML = '<i class="fas fa-edit"></i> Redessiner la zone';
     drawBboxBtn.disabled = false;
     clearBboxBtn.style.display = 'inline-flex';
@@ -2008,10 +1987,10 @@ function finalizeBoundingBox(start, end) {
 // Mettre à jour l'affichage de la bounding box
 function updateBboxDisplay() {
     if (!boundingBox) return;
-    
+
     const bboxDisplay = document.getElementById('bboxDisplay');
     const bboxCoords = document.getElementById('bboxCoords');
-    
+
     if (bboxDisplay && bboxCoords) {
         const coordsText = `${boundingBox.south.toFixed(6)}, ${boundingBox.west.toFixed(6)}, ${boundingBox.north.toFixed(6)}, ${boundingBox.east.toFixed(6)}`;
         bboxCoords.value = coordsText;
@@ -2026,33 +2005,33 @@ function clearBoundingBox() {
         map.removeLayer(bboxRectangle);
         bboxRectangle = null;
     }
-    
+
     // Réinitialiser les variables
     boundingBox = null;
     drawingMode = false;
     isDrawing = false;
     startLatLng = null;
-    
+
     // Mettre à jour l'interface
     const drawBboxBtn = document.getElementById('drawBbox');
     const clearBboxBtn = document.getElementById('clearBbox');
     const bboxDisplay = document.getElementById('bboxDisplay');
     const bboxCoords = document.getElementById('bboxCoords');
-    
+
     drawBboxBtn.innerHTML = '<i class="fas fa-draw-polygon"></i> Dessiner sur la carte';
     drawBboxBtn.disabled = false;
     clearBboxBtn.style.display = 'none';
-    
+
     if (bboxDisplay) {
         bboxDisplay.style.display = 'none';
     }
     if (bboxCoords) {
         bboxCoords.value = '';
     }
-    
+
     // Restaurer le curseur
     map.getContainer().style.cursor = '';
-    
+
     // Réactiver les contrôles de la carte
     map.dragging.enable();
     map.touchZoom.enable();
@@ -2072,7 +2051,7 @@ function getSelectedGeographicArea() {
             name: `Zone personnalisée (${south.toFixed(3)}, ${west.toFixed(3)}, ${north.toFixed(3)}, ${east.toFixed(3)})`
         };
     }
-    
+
     // Sinon, utiliser la France par défaut
     return {
         query: 'area["ISO3166-1"="FR"][admin_level=2];',
@@ -2084,10 +2063,10 @@ function getSelectedGeographicArea() {
 function populateMainCategories() {
     const categorySelect = document.querySelector('.main-search .category');
     if (!categorySelect) return;
-    
+
     // Vider les options existantes sauf la première
     categorySelect.innerHTML = '<option value="">Sélectionner une catégorie</option>';
-    
+
     // Ajouter les catégories depuis la configuration
     Object.keys(config.categories).forEach(categoryKey => {
         const category = config.categories[categoryKey];
@@ -2101,12 +2080,12 @@ function populateMainCategories() {
 // Ajouter un complément de recherche
 function addComplement() {
     complementCount++;
-    
+
     const complementsContainer = document.getElementById('complementsContainer');
     const newComplement = document.createElement('div');
     newComplement.className = 'complement-item';
     newComplement.id = `complement${complementCount}`;
-    
+
     newComplement.innerHTML = `
         <div class="complement-header">
             <span class="complement-title">Complément ${complementCount}</span>
@@ -2120,7 +2099,7 @@ function addComplement() {
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <div class="condition-fields">
             <div class="field-group">
                 <label>Catégorie :</label>
@@ -2128,14 +2107,14 @@ function addComplement() {
                     <option value="">Sélectionner une catégorie</option>
                 </select>
             </div>
-            
+
             <div class="field-group">
                 <label>Types (sélection multiple) :</label>
                 <div class="types-container" name="complementTypes${complementCount}">
                     <p class="no-types">Sélectionnez d'abord une catégorie</p>
                 </div>
             </div>
-            
+
             <div class="field-group">
                 <label>Recherche par nom (optionnel) :</label>
                 <div class="name-search">
@@ -2148,7 +2127,7 @@ function addComplement() {
                     <input type="text" class="name" name="complementName${complementCount}" placeholder="Texte à rechercher" disabled>
                 </div>
             </div>
-            
+
             <div class="field-group">
                 <label>Distance :</label>
                 <div class="distance-input">
@@ -2158,13 +2137,13 @@ function addComplement() {
             </div>
         </div>
     `;
-    
+
     complementsContainer.appendChild(newComplement);
-    
+
     // Peupler les catégories pour le nouveau complément
     const newCategorySelect = newComplement.querySelector('.category');
     populateCategorySelect(newCategorySelect);
-    
+
     // Mettre à jour la visibilité des boutons de suppression
     updateComplementRemoveButtons();
 }
@@ -2195,12 +2174,12 @@ function collectMainSearchAndComplements() {
         mainSearch: null,
         complements: []
     };
-    
+
     // Collecter la recherche principale
     const mainSearch = document.querySelector('.main-search');
     if (mainSearch) {
         const category = mainSearch.querySelector('.category').value;
-        
+
         if (category) {
             // Collecter les types sélectionnés
             const selectedTypes = [];
@@ -2208,11 +2187,11 @@ function collectMainSearchAndComplements() {
             typeCheckboxes.forEach(checkbox => {
                 selectedTypes.push(checkbox.value);
             });
-            
+
             // Collecter les informations de recherche par nom
             const nameMode = mainSearch.querySelector('.name-mode').value;
             const nameValue = mainSearch.querySelector('.name').value;
-            
+
             result.mainSearch = {
                 category,
                 types: selectedTypes,
@@ -2221,14 +2200,14 @@ function collectMainSearchAndComplements() {
             };
         }
     }
-    
+
     // Collecter les compléments
     const complements = document.querySelectorAll('.complement-item');
     complements.forEach((complement, index) => {
         const category = complement.querySelector('.category').value;
         const operator = complement.querySelector('.operator').value;
         const distance = complement.querySelector('.distance').value;
-        
+
         if (category) {
             // Collecter les types sélectionnés
             const selectedTypes = [];
@@ -2236,11 +2215,11 @@ function collectMainSearchAndComplements() {
             typeCheckboxes.forEach(checkbox => {
                 selectedTypes.push(checkbox.value);
             });
-            
+
             // Collecter les informations de recherche par nom
             const nameMode = complement.querySelector('.name-mode').value;
             const nameValue = complement.querySelector('.name').value;
-            
+
             result.complements.push({
                 operator,
                 category,
@@ -2251,28 +2230,28 @@ function collectMainSearchAndComplements() {
             });
         }
     });
-    
+
     return result;
 }
 
 // Construire la requête selon votre exemple
 function buildNewStyleQuery() {
     const searchData = collectMainSearchAndComplements();
-    
+
     if (!searchData.mainSearch) {
         throw new Error('Veuillez définir la recherche principale');
     }
-    
+
     // Obtenir la bounding box
     if (!boundingBox) {
         throw new Error('Veuillez dessiner une zone de recherche sur la carte');
     }
-    
+
     const { south, west, north, east } = boundingBox;
-    
+
     // Construire la requête selon votre exemple
     let query = `[out:json][timeout:25][bbox:${south},${west},${north},${east}];\n`;
-    
+
     if (searchData.complements.length > 0) {
         // 1. D'abord trouver les compléments dans la zone (éléments de référence)
         searchData.complements.forEach((complement, index) => {
@@ -2282,21 +2261,21 @@ function buildNewStyleQuery() {
             query += buildMainSearchQuery(complement);
             query += `)->.${complementName};\n\n`;
         });
-        
+
         // 2. Chercher les éléments principaux dans la zone avec contraintes de proximité
         query += `// ${searchData.complements.length + 1}. Trouver les ${getConditionDescription(searchData.mainSearch)} dans la zone`;
-        
+
         // Ajouter les contraintes de proximité dans le titre
-        const proximityDescriptions = searchData.complements.map((comp, index) => 
+        const proximityDescriptions = searchData.complements.map((comp, index) =>
             `à ${comp.distance}m des ${getConditionDescription(comp)}`
         );
         query += ` ${proximityDescriptions.join(' et ')}\n`;
-        
+
         query += '(\n';
-        
+
         // Construire la requête pour les éléments principaux avec toutes les contraintes de proximité
         const { category, types, nameMode, nameValue } = searchData.mainSearch;
-        
+
         // Construire le filtre par nom si spécifié
         let nameFilter = '';
         if (nameMode && nameValue && nameValue.trim()) {
@@ -2312,14 +2291,14 @@ function buildNewStyleQuery() {
                     break;
             }
         }
-        
+
         // Construire les filtres de proximité pour tous les compléments
         let proximityFilters = '';
         searchData.complements.forEach((complement, index) => {
             const complementName = getComplementVariableName(complement);
             proximityFilters += `(around.${complementName}:${complement.distance})`;
         });
-        
+
         // Appliquer à tous les types d'éléments
         if (types && types.length > 0) {
             // Recherche avec types spécifiques sélectionnés
@@ -2330,13 +2309,13 @@ function buildNewStyleQuery() {
             // Recherche par catégorie seulement
             query += `  nwr[${category}]${nameFilter}${proximityFilters};\n`;
         }
-        
+
         query += `)->.main_results;\n\n`;
-        
+
         // 3. Sortir tous les résultats avec des tags pour les identifier
         query += '// Sortir les résultats principaux\n';
         query += '.main_results out center;\n\n';
-        
+
         // 4. Sortir les compléments avec des tags pour les identifier
         searchData.complements.forEach((complement, index) => {
             const complementName = getComplementVariableName(complement);
@@ -2351,7 +2330,7 @@ function buildNewStyleQuery() {
         query += buildMainSearchQuery(searchData.mainSearch);
         query += ');\nout center;';
     }
-    
+
     return query;
 }
 
@@ -2359,7 +2338,7 @@ function buildNewStyleQuery() {
 function buildMainSearchQuery(mainSearch) {
     const { category, types, nameMode, nameValue } = mainSearch;
     let query = '';
-    
+
     // Construire le filtre par nom si spécifié
     let nameFilter = '';
     if (nameMode && nameValue && nameValue.trim()) {
@@ -2375,17 +2354,16 @@ function buildMainSearchQuery(mainSearch) {
                 break;
         }
     }
-    
+
     if (types && types.length > 0) {
-        // Recherche avec types spécifiques sélectionnés
-        types.forEach(type => {
-            query += `  nwr[${category}=${type}]${nameFilter};\n`;
-        });
+        // Recherche avec types spécifiques sélectionnés en utilisant une regex
+        const typesRegex = types.join('|');
+        query += `  nwr["${category}"~"^(${typesRegex})$"]${nameFilter};\n`;
     } else {
         // Recherche par catégorie seulement
         query += `  nwr[${category}]${nameFilter};\n`;
     }
-    
+
     return query;
 }
 
@@ -2393,7 +2371,7 @@ function buildMainSearchQuery(mainSearch) {
 function buildComplementQuery(complement) {
     const { category, types, nameMode, nameValue, distance } = complement;
     let query = '';
-    
+
     // Construire le filtre par nom si spécifié
     let nameFilter = '';
     if (nameMode && nameValue && nameValue.trim()) {
@@ -2409,7 +2387,7 @@ function buildComplementQuery(complement) {
                 break;
         }
     }
-    
+
     if (types && types.length > 0) {
         // Recherche avec types spécifiques sélectionnés
         types.forEach(type => {
@@ -2419,14 +2397,14 @@ function buildComplementQuery(complement) {
         // Recherche par catégorie seulement
         query += `  nwr[${category}]${nameFilter}(around.main_elements:${distance});\n`;
     }
-    
+
     return query;
 }
 
 // Obtenir le nom de variable pour un complément
 function getComplementVariableName(complement) {
     const { category, types } = complement;
-    
+
     // Créer un nom de variable basé sur la catégorie et le type
     if (types && types.length > 0) {
         const firstType = types[0];
@@ -2440,7 +2418,7 @@ function getComplementVariableName(complement) {
 function buildMainSearchQueryWithReference(mainSearch, referenceName, distance) {
     const { category, types, nameMode, nameValue } = mainSearch;
     let query = '';
-    
+
     // Construire le filtre par nom si spécifié
     let nameFilter = '';
     if (nameMode && nameValue && nameValue.trim()) {
@@ -2456,7 +2434,7 @@ function buildMainSearchQueryWithReference(mainSearch, referenceName, distance) 
                 break;
         }
     }
-    
+
     if (types && types.length > 0) {
         // Recherche avec types spécifiques sélectionnés
         types.forEach(type => {
@@ -2466,7 +2444,7 @@ function buildMainSearchQueryWithReference(mainSearch, referenceName, distance) 
         // Recherche par catégorie seulement
         query += `  nwr[${category}]${nameFilter}(around.${referenceName}:${distance});\n`;
     }
-    
+
     return query;
 }
 
@@ -2474,7 +2452,7 @@ function buildMainSearchQueryWithReference(mainSearch, referenceName, distance) 
 function buildComplementQueryWithReference(mainSearch, referenceName, distance) {
     const { category, types, nameMode, nameValue } = mainSearch;
     let query = '';
-    
+
     // Construire le filtre par nom si spécifié
     let nameFilter = '';
     if (nameMode && nameValue && nameValue.trim()) {
@@ -2490,7 +2468,7 @@ function buildComplementQueryWithReference(mainSearch, referenceName, distance) 
                 break;
         }
     }
-    
+
     if (types && types.length > 0) {
         // Recherche avec types spécifiques sélectionnés
         types.forEach(type => {
@@ -2500,7 +2478,7 @@ function buildComplementQueryWithReference(mainSearch, referenceName, distance) 
         // Recherche par catégorie seulement
         query += `  nwr[${category}]${nameFilter}(around.${referenceName}:${distance});\n`;
     }
-    
+
     return query;
 }
 
@@ -2509,27 +2487,27 @@ function initializeAddressSearch() {
     const addressInput = document.getElementById('addressInput');
     const searchAddressBtn = document.getElementById('searchAddressBtn');
     const addressSuggestions = document.getElementById('addressSuggestions');
-    
+
     if (!addressInput || !searchAddressBtn || !addressSuggestions) return;
-    
+
     let searchTimeout;
-    
+
     // Recherche en temps réel pendant la saisie
     addressInput.addEventListener('input', function() {
         const query = this.value.trim();
-        
+
         clearTimeout(searchTimeout);
-        
+
         if (query.length < 3) {
             addressSuggestions.style.display = 'none';
             return;
         }
-        
+
         searchTimeout = setTimeout(() => {
             searchAddresses(query);
         }, 300);
     });
-    
+
     // Recherche au clic sur le bouton
     searchAddressBtn.addEventListener('click', function() {
         const query = addressInput.value.trim();
@@ -2537,7 +2515,7 @@ function initializeAddressSearch() {
             searchAddresses(query);
         }
     });
-    
+
     // Recherche à l'appui sur Entrée
     addressInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -2547,7 +2525,7 @@ function initializeAddressSearch() {
             }
         }
     });
-    
+
     // Masquer les suggestions quand on clique ailleurs
     document.addEventListener('click', function(e) {
         if (!addressInput.contains(e.target) && !addressSuggestions.contains(e.target)) {
@@ -2559,35 +2537,35 @@ function initializeAddressSearch() {
 // Rechercher des adresses avec l'API Nominatim
 async function searchAddresses(query) {
     const addressSuggestions = document.getElementById('addressSuggestions');
-    
+
     try {
         // Afficher un indicateur de chargement
         addressSuggestions.innerHTML = '<div class="address-suggestion">🔍 Recherche en cours...</div>';
         addressSuggestions.style.display = 'block';
-        
+
         // Construire l'URL de l'API Nominatim
         const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`;
-        
+
         const response = await fetch(nominatimUrl, {
             headers: {
                 'User-Agent': 'OSINT-Recherche-Overpass/1.0'
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
         }
-        
+
         const results = await response.json();
-        
+
         // Afficher les résultats
         displayAddressSuggestions(results);
-        
+
     } catch (error) {
         console.error('Erreur lors de la recherche d\'adresse:', error);
         addressSuggestions.innerHTML = '<div class="address-suggestion">❌ Erreur lors de la recherche</div>';
         addressSuggestions.style.display = 'block';
-        
+
         setTimeout(() => {
             addressSuggestions.style.display = 'none';
         }, 3000);
@@ -2597,36 +2575,36 @@ async function searchAddresses(query) {
 // Afficher les suggestions d'adresses
 function displayAddressSuggestions(results) {
     const addressSuggestions = document.getElementById('addressSuggestions');
-    
+
     if (!results || results.length === 0) {
         addressSuggestions.innerHTML = '<div class="address-suggestion">🚫 Aucune adresse trouvée</div>';
         addressSuggestions.style.display = 'block';
-        
+
         setTimeout(() => {
             addressSuggestions.style.display = 'none';
         }, 3000);
         return;
     }
-    
+
     // Construire la liste des suggestions
     let suggestionsHTML = '';
-    
+
     results.forEach((result, index) => {
         const lat = parseFloat(result.lat);
         const lon = parseFloat(result.lon);
         const displayName = result.display_name;
         const type = result.type || 'Lieu';
-        
+
         // Extraire les informations principales
         const address = result.address || {};
-        const name = address.house_number && address.road 
+        const name = address.house_number && address.road
             ? `${address.house_number} ${address.road}`
             : address.road || address.village || address.town || address.city || result.name || 'Sans nom';
-        
+
         const location = [address.city, address.town, address.village, address.county]
             .filter(Boolean)
             .join(', ') || address.country || '';
-        
+
         suggestionsHTML += `
             <div class="address-suggestion" data-lat="${lat}" data-lon="${lon}" data-name="${displayName}">
                 <div class="suggestion-name">${name}</div>
@@ -2634,10 +2612,10 @@ function displayAddressSuggestions(results) {
             </div>
         `;
     });
-    
+
     addressSuggestions.innerHTML = suggestionsHTML;
     addressSuggestions.style.display = 'block';
-    
+
     // Ajouter les événements de clic sur les suggestions
     const suggestionElements = addressSuggestions.querySelectorAll('.address-suggestion');
     suggestionElements.forEach(suggestion => {
@@ -2645,13 +2623,13 @@ function displayAddressSuggestions(results) {
             const lat = parseFloat(this.dataset.lat);
             const lon = parseFloat(this.dataset.lon);
             const name = this.dataset.name;
-            
+
             // Zoomer sur l'adresse sélectionnée
             zoomToAddress(lat, lon, name);
-            
+
             // Masquer les suggestions
             addressSuggestions.style.display = 'none';
-            
+
             // Mettre à jour le champ de recherche
             document.getElementById('addressInput').value = this.querySelector('.suggestion-name').textContent;
         });
@@ -2661,10 +2639,10 @@ function displayAddressSuggestions(results) {
 // Zoomer sur une adresse
 function zoomToAddress(lat, lon, name) {
     if (!map) return;
-    
+
     // Zoomer sur l'adresse
     map.setView([lat, lon], 16);
-    
+
     // Ajouter un marqueur temporaire
     const addressMarker = L.marker([lat, lon], {
         icon: L.icon({
@@ -2676,7 +2654,7 @@ function zoomToAddress(lat, lon, name) {
             shadowSize: [41, 41]
         })
     }).addTo(map);
-    
+
     // Popup avec les informations de l'adresse
     const popupContent = `
         <div>
@@ -2690,12 +2668,12 @@ function zoomToAddress(lat, lon, name) {
             </div>
         </div>
     `;
-    
+
     addressMarker.bindPopup(popupContent).openPopup();
-    
+
     // Stocker la référence du marqueur pour pouvoir le supprimer
     window.currentAddressMarker = addressMarker;
-    
+
     showSuccess(`Adresse trouvée : ${name}`);
 }
 
