@@ -16,100 +16,6 @@
         </header>
 
         <div class="main-content">
-            <div class="search-panel">
-                <form id="searchForm">
-                    <!-- Mode proximité croisée uniquement -->
-                    <input type="hidden" name="searchMode" value="proximity">
-
-                    <!-- Zone de recherche par bounding box -->
-                    <div class="geographic-zone">
-                        <h3>Zone de recherche :</h3>
-                        <div class="field-group">
-                            <label>Définir la zone :</label>
-                            <div class="bbox-controls">
-                                <button type="button" id="drawBbox" class="btn btn-secondary">
-                                    <i class="fas fa-draw-polygon"></i> Dessiner sur la carte
-                                </button>
-                                <button type="button" id="clearBbox" class="btn btn-secondary" style="display:none;">
-                                    <i class="fas fa-trash"></i> Effacer la zone
-                                </button>
-                            </div>
-                        </div>
-                        <div class="field-group" id="bboxDisplay" style="display:none;">
-                            <label>Coordonnées de la zone :</label>
-                            <div class="bbox-coords">
-                                <input type="text" id="bboxCoords" readonly placeholder="Dessinez une zone sur la carte">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Élément principal à rechercher -->
-                    <div class="main-search">
-                        <h3>Quoi chercher :</h3>
-                        <div class="condition-fields">
-                            <div class="field-group">
-                                <label>Catégorie :</label>
-                                <select class="category" name="mainCategory" required>
-                                    <option value="">Sélectionner une catégorie</option>
-                                </select>
-                            </div>
-                            
-                            <div class="field-group">
-                                <label>Types (sélection multiple) :</label>
-                                <div class="types-container" name="mainTypes">
-                                    <p class="no-types">Sélectionnez d'abord une catégorie</p>
-                                </div>
-                            </div>
-                            
-                            <div class="field-group">
-                                <label>Recherche par nom (optionnel) :</label>
-                                <div class="name-search">
-                                    <select class="name-mode" name="mainNameMode">
-                                        <option value="">Ignorer le nom</option>
-                                        <option value="exact">Nom exact</option>
-                                        <option value="contains">Contient</option>
-                                        <option value="starts">Commence par</option>
-                                    </select>
-                                    <input type="text" class="name" name="mainName" placeholder="Texte à rechercher" disabled>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Compléments de recherche -->
-                    <div class="complements-container">
-                        <h3>Compléments de recherche :</h3>
-                        <div id="complementsContainer">
-                            <!-- Les compléments seront ajoutés ici dynamiquement -->
-                        </div>
-                        
-                        <div class="complement-controls">
-                            <button type="button" id="addComplement" class="btn btn-secondary">
-                                <i class="fas fa-plus"></i> Ajouter un complément
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="controls">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Rechercher
-                        </button>
-                        
-                        <button type="button" id="clearAll" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Effacer tout
-                        </button>
-                    </div>
-                </form>
-
-                <div class="query-section">
-                    <h3>Requête Overpass générée :</h3>
-                    <div id="queryDisplay" class="query-display"></div>
-                    <button type="button" id="copyQuery" class="btn btn-secondary">
-                        <i class="fas fa-copy"></i> Copier la requête
-                    </button>
-                </div>
-            </div>
-
             <div class="results-panel">
                 <div class="map-container">
                     <h3>Carte des résultats</h3>
@@ -183,6 +89,99 @@
                     </button>
                     <button id="downloadCSV" class="btn btn-success" style="display:none;">
                         <i class="fas fa-file-csv"></i> Télécharger CSV
+                    </button>
+                </div>
+            </div>
+            <div class="search-panel">
+                <form id="searchForm">
+                    <!-- Mode proximité croisée uniquement -->
+                    <input type="hidden" name="searchMode" value="proximity">
+
+                    <!-- Zone de recherche par bounding box -->
+                    <div class="geographic-zone">
+                        <h3>Zone de recherche :</h3>
+                        <div class="field-group">
+                            <label>Définir la zone :</label>
+                            <div class="bbox-controls">
+                                <button type="button" id="drawBbox" class="btn btn-secondary">
+                                    <i class="fas fa-draw-polygon"></i> Dessiner sur la carte
+                                </button>
+                                <button type="button" id="clearBbox" class="btn btn-secondary" style="display:none;">
+                                    <i class="fas fa-trash"></i> Effacer la zone
+                                </button>
+                            </div>
+                        </div>
+                        <div class="field-group" id="bboxDisplay" style="display:none;">
+                            <label>Coordonnées de la zone :</label>
+                            <div class="bbox-coords">
+                                <input type="text" id="bboxCoords" readonly placeholder="Dessinez une zone sur la carte">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Élément principal à rechercher -->
+                    <div class="main-search">
+                        <h3>Quoi chercher :</h3>
+                        <div class="condition-fields">
+                            <div class="field-group">
+                                <label>Catégorie :</label>
+                                <select class="category" name="mainCategory" required>
+                                    <option value="">Sélectionner une catégorie</option>
+                                </select>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Types (sélection multiple) :</label>
+                                <div class="types-container" name="mainTypes">
+                                    <p class="no-types">Sélectionnez d'abord une catégorie</p>
+                                </div>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Recherche par nom (optionnel) :</label>
+                                <div class="name-search">
+                                    <select class="name-mode" name="mainNameMode">
+                                        <option value="">Ignorer le nom</option>
+                                        <option value="exact">Nom exact</option>
+                                        <option value="contains">Contient</option>
+                                        <option value="starts">Commence par</option>
+                                    </select>
+                                    <input type="text" class="name" name="mainName" placeholder="Texte à rechercher" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compléments de recherche -->
+                    <div class="complements-container">
+                        <h3>Compléments de recherche :</h3>
+                        <div id="complementsContainer">
+                            <!-- Les compléments seront ajoutés ici dynamiquement -->
+                        </div>
+
+                        <div class="complement-controls">
+                            <button type="button" id="addComplement" class="btn btn-secondary">
+                                <i class="fas fa-plus"></i> Ajouter un complément
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Rechercher
+                        </button>
+
+                        <button type="button" id="clearAll" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Effacer tout
+                        </button>
+                    </div>
+                </form>
+
+                <div class="query-section">
+                    <h3>Requête Overpass générée :</h3>
+                    <div id="queryDisplay" class="query-display"></div>
+                    <button type="button" id="copyQuery" class="btn btn-secondary">
+                        <i class="fas fa-copy"></i> Copier la requête
                     </button>
                 </div>
             </div>

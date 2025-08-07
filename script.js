@@ -1972,7 +1972,7 @@ function onMapTouchStart(e) {
     e.preventDefault(); // Empêcher les événements de souris
 
     isDrawing = true;
-    startLatLng = map.mouseEventToLatLng(e.touches[0]); // Convertir le point tactile en LatLng
+    startLatLng = e.latlng; // Utiliser e.latlng fourni par Leaflet
 
     // Empêcher le déplacement de la carte pendant le dessin
     map.dragging.disable();
@@ -1989,7 +1989,7 @@ function onMapTouchMove(e) {
         map.removeLayer(bboxRectangle);
     }
 
-    const currentLatLng = map.mouseEventToLatLng(e.touches[0]);
+    const currentLatLng = e.latlng; // Utiliser e.latlng fourni par Leaflet
 
     // Créer un nouveau rectangle temporaire
     const bounds = L.latLngBounds(startLatLng, currentLatLng);
@@ -2016,8 +2016,7 @@ function onMapTouchEnd(e) {
     map.getContainer().style.cursor = '';
 
     // Finaliser la bounding box
-    // Utiliser changedTouches car `touches` est vide à la fin de l'événement
-    const endLatLng = map.mouseEventToLatLng(e.changedTouches[0]);
+    const endLatLng = e.latlng; // Utiliser e.latlng fourni par Leaflet
     finalizeBoundingBox(startLatLng, endLatLng);
 
     startLatLng = null;

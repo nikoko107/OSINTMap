@@ -56,10 +56,12 @@ header p {
 
 .search-panel {
     background: rgba(255,255,255,0.95);
+    order: 1; /* Pour le desktop, afficher en premier */
 }
 
 .results-panel {
     background: rgba(255,255,255,0.95);
+    order: 2; /* Pour le desktop, afficher en second */
 }
 
 /* Formulaire */
