@@ -1873,10 +1873,15 @@ function initializeBboxControls() {
     drawBboxBtn.addEventListener('click', startBboxDrawing);
     clearBboxBtn.addEventListener('click', clearBoundingBox);
 
-    // Événements de la carte pour le dessin
+    // Événements de la carte pour le dessin (souris)
     map.on('mousedown', onMapMouseDown);
     map.on('mousemove', onMapMouseMove);
     map.on('mouseup', onMapMouseUp);
+
+    // Événements de la carte pour le dessin (tactile)
+    map.on('touchstart', onMapTouchStart);
+    map.on('touchmove', onMapTouchMove);
+    map.on('touchend', onMapTouchEnd);
 }
 
 // Commencer le dessin de bounding box
@@ -1956,6 +1961,63 @@ function onMapMouseUp(e) {
 
     // Finaliser la bounding box
     const endLatLng = e.latlng;
+    finalizeBoundingBox(startLatLng, endLatLng);
+
+    startLatLng = null;
+}
+
+// Gérer le début du dessin (touchstart)
+function onMapTouchStart(e) {
+    if (!drawingMode) return;
+    e.preventDefault(); // Empêcher les événements de souris
+
+    isDrawing = true;
+    startLatLng = map.mouseEventToLatLng(e.touches[0]); // Convertir le point tactile en LatLng
+
+    // Empêcher le déplacement de la carte pendant le dessin
+    map.dragging.disable();
+    map.touchZoom.disable();
+}
+
+// Gérer le mouvement du doigt (touchmove)
+function onMapTouchMove(e) {
+    if (!drawingMode || !isDrawing || !startLatLng) return;
+    e.preventDefault();
+
+    // Supprimer le rectangle temporaire s'il existe
+    if (bboxRectangle) {
+        map.removeLayer(bboxRectangle);
+    }
+
+    const currentLatLng = map.mouseEventToLatLng(e.touches[0]);
+
+    // Créer un nouveau rectangle temporaire
+    const bounds = L.latLngBounds(startLatLng, currentLatLng);
+    bboxRectangle = L.rectangle(bounds, {
+        color: '#ff7800',
+        weight: 2,
+        fillOpacity: 0.1
+    }).addTo(map);
+}
+
+// Gérer la fin du dessin (touchend)
+function onMapTouchEnd(e) {
+    if (!drawingMode || !isDrawing || !startLatLng) return;
+    e.preventDefault();
+
+    isDrawing = false;
+    drawingMode = false;
+
+    // Réactiver les contrôles de la carte
+    map.dragging.enable();
+    map.touchZoom.enable();
+
+    // Restaurer le curseur
+    map.getContainer().style.cursor = '';
+
+    // Finaliser la bounding box
+    // Utiliser changedTouches car `touches` est vide à la fin de l'événement
+    const endLatLng = map.mouseEventToLatLng(e.changedTouches[0]);
     finalizeBoundingBox(startLatLng, endLatLng);
 
     startLatLng = null;
